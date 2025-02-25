@@ -1,0 +1,7 @@
+/bin
+/build
+compile_commands.json
+
+
+# windsurf rules
+.windsurfrules
