@@ -10,35 +10,67 @@ This template is specifically designed to:
 - Include detailed explanations for each concept
 - Serve as a foundation for competition-ready code
 
-## 📚 Learning Path
+## 📚 Current Implementation
 
-### 1. Getting Started
-- Basic robot setup and configuration
-- Understanding the program structure
-- Running your first program
+Here's what's currently implemented in the code:
 
-### 2. Basic Control
+### 1. Basic Robot Configuration (`robot-config.cpp`, `robot-config.h`)
+- Motor setup and configuration
+- Controller setup
+- Inertial sensor setup
+- Basic initialization functions
+
+### 2. Drive System (`Legacy-Template/drive.cpp`, `drive.h`)
 - Tank drive implementation
 - Arcade drive implementation
-- Using the VEX controller
-- Basic motor control
+- Basic movement functions:
+  - Drive by voltage
+  - Turn by degrees
+  - Drive distance
+  - Get heading
+
+### 3. Autonomous Framework (`main.cpp`, `Legacy-Template/constants.h`)
+- Autonomous routine selection
+- Basic autonomous functions
+- Constants system for autonomous values
+
+### 4. User Control (`main.cpp`)
+- Tank drive control
+- Real-time status display
+- Controller input handling
+
+## 🎓 Learning Modules
+
+The `docs/` folder contains detailed tutorials that match our implementation:
+
+### 1. Getting Started
+- Understanding the VEX V5 system
+- Project structure explanation
+- Basic robot configuration
+- Your first program
+
+### 2. Basic Control
+- Understanding motor groups
+- Tank vs arcade drive
+- Controller input basics
+- Basic movement commands
 
 ### 3. Drive Systems
-- Different drive types
-- Wheel measurements
-- Motor groups
-- Basic movement functions
+- Creating a drive class
+- Movement functions
+- Sensor integration
+- Basic autonomous movements
 
 ### 4. Autonomous Programming
 - Creating autonomous routines
-- Distance-based movement
-- Turn functions
-- Sensor integration
+- Using the constants system
+- Basic autonomous functions
+- Autonomous selection system
 
-### 5. Advanced Features
-- Advanced autonomous functions
+### 5. Advanced Features (Coming Soon)
 - PID control
 - Odometry
+- Advanced autonomous
 - Path following
 
 ## 📁 Project Structure
@@ -60,7 +92,8 @@ Legacy-Template/
 │   ├── main.cpp           # Main program
 │   ├── robot-config.cpp   # Robot configuration
 │   └── Legacy-Template/   # Core implementations
-│       └── drive.cpp      # Drive system
+│       ├── drive.cpp      # Drive system
+│       └── constants.cpp  # Constants implementation
 └── README.md              # This file
 ```
 
@@ -77,8 +110,40 @@ Legacy-Template/
 
 3. **Configure Your Robot**
    - Open `src/robot-config.cpp`
-   - Update motor ports and configurations
+   - Update motor ports and configurations:
+     ```cpp
+     // Left drive motors
+     motor leftFront(PORT1, ratio18_1, false);  // Port 1, 18:1 gear ratio
+     motor leftBack(PORT2, ratio18_1, false);   // Port 2, 18:1 gear ratio
+     
+     // Right drive motors
+     motor rightFront(PORT3, ratio18_1, true);  // Port 3, 18:1 gear ratio
+     motor rightBack(PORT4, ratio18_1, true);   // Port 4, 18:1 gear ratio
+     
+     // Sensors
+     inertial InertialSensor(PORT5);           // Port 5
+     ```
    - Save and download to your robot
+
+## 🛠️ Current Features
+
+- **Drive System**
+  - Tank and arcade drive modes
+  - Basic autonomous movements
+  - Inertial sensor integration
+  - Voltage-based motor control
+
+- **Autonomous**
+  - Multiple routine selection
+  - Basic movement commands
+  - Constants system for configuration
+  - Screen-based routine selector
+
+- **User Control**
+  - Tank drive implementation
+  - Real-time status display
+  - Smooth motor control
+  - Controller deadband handling
 
 ## 📖 Documentation
 
@@ -90,14 +155,6 @@ Each module in the `docs/` folder contains:
 - Common issues and solutions
 
 Start with `docs/01_getting_started/` and work your way through each module in order.
-
-## 🛠️ Features
-
-- **Modular Design**: Easy to understand and modify
-- **Educational Comments**: Learn as you code
-- **Flexible Setup**: Supports different drive configurations
-- **Competition Ready**: Built for VEX robotics competitions
-- **Expandable**: Add your own features as you learn
 
 ## 🤝 Contributing
 
