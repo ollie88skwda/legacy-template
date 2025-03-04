@@ -1,108 +1,122 @@
 #include "vex.h"
 #include "robot-config.h"
+#include "Legacy-Template/drive.h"
+#include "Legacy-Template/constants.h"
 
 using namespace vex;
+using namespace legacy;
 
 // A global instance of competition
 competition Competition;
 
-/*---------------------------------------------------------------------------*/
-/*                          Legacy Template Config                             */
-/*                                                                            */
-/*  This is where you set up your robot's drive system. Follow the           */
-/*  instructions below to configure your robot's motors and settings.         */
-/*---------------------------------------------------------------------------*/
-
-// Create the drive system
-Drive chassis(
-  // Left side motors - Add all your left drive motors here
-  motor_group(),
-
-  // Right side motors - Add all your right drive motors here
-  motor_group(),
-
-  // Drive settings
-  4.125,    // Wheel diameter (inches) (4" omnis are actually 4.125")
-  1.0     // Drive gear ratio (if your wheels are geared up/down from motors)
+// Create our drive system
+legacy::Drive chassis(
+  drive_setup::ZERO_TRACKER_NO_ODOM,  // Using enum class syntax
+  motor_group(leftFront, leftBack),   // Left motors
+  motor_group(rightFront, rightBack), // Right motors
+  InertialSensor                      // Gyro sensor
 );
 
-/*---------------------------------------------------------------------------*/
-/*                          Drive Control Settings                             */
-/*                                                                            */
-/*  Choose how you want to control your robot during driver control.          */
-/*---------------------------------------------------------------------------*/
-
-// Choose your drive type: true for arcade, false for tank
-bool arcade_drive = true;  // Change this to false if you want tank drive
+// Variables for autonomous selection
+int current_auton_selection = 0;  // Keeps track of which autonomous routine to run
+bool auto_started = false;        // Indicates if autonomous has started
 
 /*---------------------------------------------------------------------------*/
-/*                              Pre-Autonomous                                 */
+/*                          Pre-Autonomous Functions                           */
 /*                                                                            */
-/*  This runs before autonomous starts. You can use it to set up your        */
-/*  robot's starting position or reset sensors.                              */
+/* You may want to perform some actions before the competition starts.        */
+/* Do them in the following function.  You must return from this function     */
+/* or the autonomous and usercontrol tasks will not be started.              */
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
-  // Initialize devices from robot-config.cpp
+  // Initialize robot configuration
   vexcodeInit();
   
-  // Reset sensors
-  chassis.reset_heading();  // Reset gyro to 0
+  // Set up default constants
+  legacy::default_constants();
+
+  // Allow time to select autonomous routine
+  while(!auto_started) {
+    // Display current selection on the screen
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1,1);
+    switch(current_auton_selection) {
+      case 0:
+        Brain.Screen.print("Autonomous: Drive Forward");
+        break;
+      case 1:
+        Brain.Screen.print("Autonomous: Turn and Drive");
+        break;
+    }
+    
+    // Check for button press to change selection
+    if(Brain.Screen.pressing()) {
+      current_auton_selection++;
+      if(current_auton_selection > 1) current_auton_selection = 0;
+      wait(200, msec); // Debounce delay
+    }
+    
+    wait(20, msec); // Don't hog the CPU
+  }
 }
 
 /*---------------------------------------------------------------------------*/
-/*                              Autonomous Task                                */
+/*                              Autonomous Task                               */
 /*                                                                            */
-/*  This runs during the autonomous period. Write your autonomous code here.  */
+/* This task is used to control your robot during the autonomous phase of    */
+/* a VEX Competition.                                                        */
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
-  // Example autonomous routine:
+  auto_started = true;  // Mark that autonomous has started
   
-  // Drive forward 24 inches
-  chassis.drive_distance(24);
-  
-  // Turn 90 degrees
-  chassis.turn_to_angle(90);
-  
-  // Drive forward 12 inches
-  chassis.drive_distance(12);
+  // Run the selected autonomous routine
+  switch(current_auton_selection) {
+    case 0:  // Basic drive forward
+      chassis.drive_distance(24);  // Drive forward 24 inches
+      break;
+      
+    case 1:  // Turn and drive
+      chassis.drive_distance(24);  // Drive forward 24 inches
+      chassis.turn_degrees(90);    // Turn 90 degrees right
+      chassis.drive_distance(24);  // Drive forward 24 inches
+      break;
+  }
 }
 
 /*---------------------------------------------------------------------------*/
 /*                              User Control Task                             */
 /*                                                                            */
-/*  This runs during the driver control period. Write your driver code here. */
+/* This task is used to control your robot during the user control phase of  */
+/* a VEX Competition.                                                        */
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
-  // User control code here, inside the loop
   while (1) {
-    // This is the main execution loop for the user control program.
-    // Each time through the loop your program should update motor + servo
-    // values based on feedback from the joysticks.
-
-    // ........................................................................
-    // Insert user code here. This is where you use the joystick values to
-    // update your motors, etc.
-    // ........................................................................
-
-    // Replace this line with:
-    // chassis.control_tank(); for tank drive
-    // chassis.control_arcade_reverse(); for reverse arcade drive
-    chassis.control_arcade();
+    // Get the controller's joystick values
+    int left_speed = Controller1.Axis3.position();
+    int right_speed = Controller1.Axis2.position();
     
-
-    wait(20, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
+    // Update the drive based on controller input
+    chassis.set_tank(left_speed, right_speed);
+    
+    // Display some useful information on the brain's screen
+    Brain.Screen.clearScreen();
+    Brain.Screen.printAt(5, 20, "Left Speed: %d", left_speed);
+    Brain.Screen.printAt(5, 40, "Right Speed: %d", right_speed);
+    Brain.Screen.printAt(5, 60, "Heading: %f deg", chassis.get_absolute_heading());
+    
+    // A brief delay to prevent wasted resources
+    wait(20, msec);
   }
 }
 
 /*---------------------------------------------------------------------------*/
-/*                                  Main Task                                 */
+/*                          Main Competition Template                         */
 /*                                                                            */
-/*  This is where the competition template starts. You shouldn't need to     */
-/*  modify anything below this line.                                         */
+/* Do not modify the code in this task unless you know what you're doing.    */
+/* This task is used to run the user control and autonomous programs.        */
 /*---------------------------------------------------------------------------*/
 
 int main() {
