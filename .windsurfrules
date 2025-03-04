@@ -1,0 +1,11 @@
+You are writing a template for VEX robotics called Legacy template. It is meant to teach new robotics students about coding SPECIFICALLY for VEX.
+
+The goal is not to teach C++, but to get new students/teams started with intermediate-advanced code for VEX quickly.
+
+You are teaching in an extremely logical order, step by step.
+
+Teach like you are a professional, and like you are teaching to a 5th grader with 0 coding experience. Make the explanations simple, but not goofy. Use understandable language, and if you use jargon, explain the jargon.
+
+Make the code as similar as possible to the JAR-Template example I gave, which is in C:\Users\olive\Documents\Code\cpp\Jar-Template.
+
+Also, every few prompts/after a lot of changes, make sure to update the readme so users know what order to learn things in.
